@@ -1,0 +1,89 @@
+component 
+	name="pdfform"
+	output=true
+{
+
+	this.metadata.hint="(partial) implementation of cfpdform using iText";
+	this.metadata.attributetype="fixed";
+	this.metadata.attributes={
+		action: { required:true, type:"string", hint="[read|populate]"},
+		source: { required:true, type:"string", hint="pathname (Todo: byte array)"},
+		result: { required:false, type:"string",    hint="read - structure containing form field values"},
+		
+		destination: { required:false, type:"string", hint="pathname (Todo: stream to browser"},
+	};
+
+
+	/** custom tag interface method */
+	void function init(boolean hasEndTag=false, component parent) {
+
+		variables.hasEndTag = arguments.hasEndTag;
+		
+		variables.pdfForm = new pdfform.pdfform();
+
+		variables.stFormFields = {};
+	}
+
+	public boolean function onStartTag
+		(
+			required struct attributes, 
+			required struct caller
+		)
+	{
+		switch(arguments.attributes.action) {
+			case "read":
+				
+				//check result passed in
+				if (! variables.hasEndTag) {
+					arguments.caller[arguments.attributes.result] = variables.pdfForm.getFormFields(arguments.attributes.source);
+				}
+				
+				break;
+			case "populate":
+				// check attributes for destination
+				// check for cfpdformparm
+				 break;
+			default: 
+				throw(type="application", message="unsupported action", detail="action=[read|populate]");
+		}
+
+		return true;
+	}
+	
+
+	public boolean function onEndTag
+		(
+			required struct attributes, 
+			required struct caller,
+			required string generatedContent
+		)
+	{
+		switch(arguments.attributes.action) {
+			case "read":
+				
+
+				arguments.caller[arguments.attributes.result] = variables.pdfForm.getFormFields(arguments.attributes.source);
+
+				break;
+			case "populate":
+				variables.pdfForm.setFormFields(arguments.attributes.source,arguments.attributes.destination,variables.stFormFields);
+				 break;
+			default: 
+				throw(type="application", message="unsupported action", detail="action=[read|populate]");
+		}
+		WriteOutput(generatedContent);
+		return false;
+	}
+
+	public void function setFormField
+		(
+			required string name,
+			required string value,
+			         integer index // TODO
+		)
+	{
+		dump(var="#ARGUMENTS#", label="pdfform ARGUMENTS");
+		variables.stFormFields[ARGUMENTS.name] = ARGUMENTS.value;
+		dump(var="#variables.stFormFields#", label="pdfform setFormField");
+	}
+}

@@ -1,0 +1,61 @@
+/**
+* Lucee 
+* https://bitbucket.org/lucee/lucee/src/29290d362bcd75ebb1c860e131ec8cf7536b9e44/lucee-java/lucee-core/src/resource/library/tag/Dump.cfc?at=master
+**/
+
+/**
+* http://blog.adamcameron.me/2014/08/railo-cfc-based-custom-tags.html
+**/
+
+/**
+https://wikidocs.adobe.com/wiki/display/coldfusionen/cfpdfform
+populate 
+<cfpdfform 
+    required 
+    action = "populate"
+    source = "PDF file pathname|byte array"
+    optional 
+    XMLdata = "XML object|XML string|XML data filename| 
+        URL that returns XML data" 
+    destination = "output file pathname"
+    overwrite = "yes|no"/ 
+    fdf = "true|false> <!---New attribute that populates data in FDF format instead of    
+    XML with subforms and params---> 
+    fdfdata = "file name to be imported" <!--- New attribute populates data in FDF format 
+    from the AcroForm---> 
+read 
+<cfpdfform 
+    required 
+    action = "read"
+    source = "pathname|byte array"
+        at least one of the following: 
+    XMLdata = "variable name for XML data"
+    result = "structure containing form field values"
+    optional 
+    overwrite = "yes|no"/> 
+    fdfdata = "filename to be exported to"
+	
+	
+https://wikidocs.adobe.com/wiki/display/coldfusionen/cfpdfformparam
+
+
+<cfpdfform ...> 
+    <cfpdfformparam 
+    name = "field name"
+    value = "ColdFusion variable"
+    index = "integer"> 
+</cfpdfform>
+
+	
+	
+**/
+
+
+using
+	<cfscript>
+		pdfFile = "#ExpandPath('.')#\your.pdf";
+		pdfForm = new com.itext.pdfform();
+
+		stFormFields = pdfForm.getFormFields(pdfFile);
+		dump(var=stFormFields, label= 'stFormFields');
+	</cfscript>

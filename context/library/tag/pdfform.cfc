@@ -10,8 +10,8 @@ component
 		source: { required:true, type:"string", hint="pathname (Todo: byte array)"},
 		result: { required:false, type:"string",    hint="read - structure containing form field values"},
 		
-		destination: { required:false, type:"string", hint="pathname (Todo: stream to browser)"}
-		overwrite: { required:false, type:"boolean", hint="overwrite the destination file. default no"},
+		destination: { required:false, type:"string", hint="pathname (Todo: stream to browser)"},
+		overwrite: { required:false, type:"boolean", hint="overwrite the destination file. default no"}
 	};
 
 
@@ -32,7 +32,7 @@ component
 		)
 	{
 		// check for action
-		if (! StruckKeyExists(arguments.attributes, 'action')) {
+		if (! StructKeyExists(arguments.attributes, 'action')) {
 			throw(type="application", message="missing parameter", detail="'action' not passed in");
 		}
 		
@@ -41,7 +41,7 @@ component
 			case "read":
 				
 				//check result passed in
-				if (! StruckKeyExists(arguments.attributes, 'result')) {
+				if (! StructKeyExists(arguments.attributes, 'result')) {
 					throw(type="application", message="missing parameter", detail="'result' not passed in");
 				}
 				
@@ -52,13 +52,13 @@ component
 				break;
 			case "populate":
 				// check attributes for destination
-				if (! StruckKeyExists(arguments.attributes, 'destination')) {
+				if (! StructKeyExists(arguments.attributes, 'destination')) {
 					throw(type="application", message="missing parameter", detail="'destination' not passed in");
 				}
 				
 				
 				// check overwrite
-				if (! StruckKeyExists(arguments.attributes, 'overwrite')) {
+				if (! StructKeyExists(arguments.attributes, 'overwrite')) {
 					arguments.attributes.overwrite = false;
 				}
 				if (! arguments.attributes.overwrite AND FileExists(arguments.attributes.destination) ) {

@@ -10,7 +10,8 @@ component
 		source: { required:true, type:"string", hint="pathname (Todo: byte array)"},
 		result: { required:false, type:"string",    hint="read - structure containing form field values"},
 		
-		destination: { required:false, type:"string", hint="pathname (Todo: stream to browser"},
+		destination: { required:false, type:"string", hint="pathname (Todo: stream to browser)"}
+		overwrite: { required:false, type:"boolean", hint="overwrite the destination file. default no"},
 	};
 
 
@@ -30,10 +31,20 @@ component
 			required struct caller
 		)
 	{
+		// check for action
+		if (! StruckKeyExists(arguments.attributes, 'action')) {
+			throw(type="application", message="missing parameter", detail="'action' not passed in");
+		}
+		
+		// check for source
 		switch(arguments.attributes.action) {
 			case "read":
 				
 				//check result passed in
+				if (! StruckKeyExists(arguments.attributes, 'result')) {
+					throw(type="application", message="missing parameter", detail="'result' not passed in");
+				}
+				
 				if (! variables.hasEndTag) {
 					arguments.caller[arguments.attributes.result] = variables.pdfForm.getFormFields(arguments.attributes.source);
 				}
@@ -41,6 +52,19 @@ component
 				break;
 			case "populate":
 				// check attributes for destination
+				if (! StruckKeyExists(arguments.attributes, 'destination')) {
+					throw(type="application", message="missing parameter", detail="'destination' not passed in");
+				}
+				
+				
+				// check overwrite
+				if (! StruckKeyExists(arguments.attributes, 'overwrite')) {
+					arguments.attributes.overwrite = false;
+				}
+				if (! arguments.attributes.overwrite AND FileExists(arguments.attributes.destination) ) {
+					throw(type="application", message="Destination file exists", detail="#arguments.attributes.destination#");
+				}
+				
 				// check for cfpdformparm
 				 break;
 			default: 
@@ -82,8 +106,8 @@ component
 			         integer index // TODO
 		)
 	{
-		dump(var="#ARGUMENTS#", label="pdfform ARGUMENTS");
+		//dump(var="#ARGUMENTS#", label="pdfform ARGUMENTS");
 		variables.stFormFields[ARGUMENTS.name] = ARGUMENTS.value;
-		dump(var="#variables.stFormFields#", label="pdfform setFormField");
+		//dump(var="#variables.stFormFields#", label="pdfform setFormField");
 	}
 }

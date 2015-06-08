@@ -72,7 +72,7 @@ component {
 			}
 		}
 
-		local.newPDF.setFormFlattening(true);
+		//local.newPDF.setFormFlattening(true); in CFPDF tag - flatten
 
 		local.newPDF.close();
 		local.pdf.close();

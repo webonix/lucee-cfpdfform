@@ -3,6 +3,9 @@ component {
 	VARIABLES.reader  = createObject("java","com.itextpdf.text.pdf.PdfReader",  "lib/itextpdf/5.5.6/itextpdf-5.5.6.jar");
 	VARIABLES.stamper = createObject("java","com.itextpdf.text.pdf.PdfStamper", "lib/itextpdf/5.5.6/itextpdf-5.5.6.jar");
 
+	// VARIABLES.writer = createObject("java","com.itextpdf.text.pdf.PdfWriter", "lib/itextpdf/5.5.6/itextpdf-5.5.6.jar");
+	// local.pdfFormNew.setCompressionLevel(9);
+
 	public any function init()
 
 	{
@@ -42,7 +45,9 @@ component {
 			required string source,
 			required string destination,
 			required struct stFormFields,
-			boolean overwrite = true
+			boolean flatten = false,
+			boolean compress = true
+			//boolean overwrite = true,
 		)
 	{
 		var local = {};
@@ -64,7 +69,7 @@ component {
 		// TODO: loop through ARGUMENTS['stFormFields'] (for now this ensures all fields are passed in)
 		while (local.stFields.hasNext()) {
 			var fieldName = stFields.next();
-			
+
 			if (StructKeyExists(ARGUMENTS['stFormFields'], fieldName)) {
 				local.pdfFormNew.setField(fieldName, ARGUMENTS['stFormFields'][fieldName]);
 			} else {
@@ -72,11 +77,18 @@ component {
 			}
 		}
 
-		//local.newPDF.setFormFlattening(true); in CFPDF tag - flatten
+		if (ARGUMENTS.flatten) {
+			local.newPDF.setFormFlattening(1); // in CFPDF tag - flatten
+		}
+		if (ARGUMENTS.compress) {
+			local.newPDF.setFullCompression();
+		}
+
+		//local.newPDF.setFullCompression();
 
 		local.newPDF.close();
-		local.pdf.close();
 		local.fileIO.close();
+		local.pdf.close();
 
 		//local.binaryFile = fileReadBinary(local.writePDF);
 		//fileDelete(local.writePDF);
